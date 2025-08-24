@@ -124,4 +124,29 @@ public class UserServiceTests
         var exception = await Assert.ThrowsAsync<DomainException>(() => _service.UpdateUser(dto, Guid.NewGuid()));
         Assert.Equal(ExceptionMessageConstants.UserNotExistsException, exception.Message);
     }
+
+    [Theory]
+    [InlineData("Luana", "luana@gmail.com", "senha123@1")]
+    public async Task GetUser_UserExists_ShouldReturnUser(string name, string email, string password)
+    {
+        var user = new User(name, email, password);
+
+        _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => user);
+
+        var result = await _service.GetUser(Guid.NewGuid());
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task GetUser_UserNotExists_ShouldReturnEmptyUser()
+    {
+        _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => null);
+
+        var result = await _service.GetUser(Guid.NewGuid());
+
+        Assert.True(result.Success);
+        Assert.Null(result.Data);
+    }
 }
