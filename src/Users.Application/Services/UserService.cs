@@ -55,8 +55,19 @@ public class UserService : IUserService
 
     }
 
-    public Task<ResultDto> UpdateUser(UserRequestDto dto)
+    public async Task<ResultDto> UpdateUser(UserRequestDto dto, Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _repository.GetUser(id);
+
+        if (user is null)
+        {
+            throw new DomainException(ExceptionMessageConstants.UserNotExistsException);
+        }
+
+        user.Update(dto.Name, dto.Email, _hasher.Hash(dto.Password));
+
+        await _repository.UpdateUser(user);
+
+        return ResultDto.Ok();
     }
 }
