@@ -8,5 +8,5 @@ public interface IUserRepository
     public Task CreateUser(User user);
     public Task UpdateUser(User user);
     public Task<bool> UserEmailAlreadyExists(string email);
-    public Task<User> GetUser(Guid id);
+    public Task<User?> GetUser(Guid id);
 }

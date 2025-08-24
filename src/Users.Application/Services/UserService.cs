@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using Users.Application.DTOs;
+﻿using Users.Application.DTOs;
 using Users.Application.Interfaces;
 using Users.Domain.Constants;
 using Users.Domain.Entities;
@@ -45,14 +44,13 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public Task<ResultDto<UserDto>> GetUser(Guid id)
+    public async Task<ResultDto<UserDto?>> GetUser(Guid id)
     {
-        throw new NotImplementedException();
-    }
+        var user = await _repository.GetUser(id);
 
-    public void Teste(Expression<Func<UserDto, bool>> predicate)
-    {
+        var dto = user is not null ? new UserDto(user?.Id, user?.Name, user?.Email) : null;
 
+        return ResultDto<UserDto?>.Ok(dto);
     }
 
     public async Task<ResultDto> UpdateUser(UserRequestDto dto, Guid id)
