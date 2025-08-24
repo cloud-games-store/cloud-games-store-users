@@ -39,9 +39,18 @@ public class UserService : IUserService
         return ResultDto.Ok();
     }
 
-    public Task<ResultDto> DeleteUser(Guid id)
+    public async Task<ResultDto> DeleteUser(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _repository.GetUser(id);
+
+        if (user is null)
+        {
+            throw new DomainException(ExceptionMessageConstants.UserNotExistsException);
+        }
+
+        await _repository.DeleteUser(user.Id);
+
+        return ResultDto.Ok();
     }
 
     public async Task<ResultDto<UserDto?>> GetUser(Guid id)
