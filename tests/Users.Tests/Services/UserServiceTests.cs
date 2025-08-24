@@ -5,7 +5,6 @@ using Users.Application.Interfaces;
 using Users.Application.Services;
 using Users.Domain.Constants;
 using Users.Domain.Entities;
-using Users.Domain.Enums;
 using Users.Domain.Exceptions;
 using Users.Domain.Interfaces;
 
@@ -86,5 +85,43 @@ public class UserServiceTests
 
         var exception = await Assert.ThrowsAsync<DomainException>(() => _service.CreateUser(dto));
         Assert.Equal(ExceptionMessageConstants.EmailAlreadyExistsException, exception.Message);
+    }
+
+    [Theory]
+    [InlineData("Luana", "luana@gmail.com", "senha123@1")]
+    public async Task UpdateUser_ValidParameters_ShouldUpdateUser(string name, string email, string password)
+    {
+        var user = new User("Name Test", "test@gmail.com", "password");
+
+        var dto = new UserRequestDto()
+        {
+            Name = name,
+            Email = email,
+            Password = password
+        };
+
+        _hasher.Setup(service => service.Hash(dto.Password)).Returns((string password) => BCrypt.Net.BCrypt.HashPassword(password));
+        _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => user);
+
+        var result = await _service.UpdateUser(dto, Guid.NewGuid());
+
+        Assert.True(result.Success);
+    }
+
+    [Theory]
+    [InlineData("Luana", "luana@gmail.com", "senha123@1")]
+    public async Task UpdateUser_UserNotExists_ShouldThrowException(string name, string email, string password)
+    {
+        var dto = new UserRequestDto()
+        {
+            Name = name,
+            Email = email,
+            Password = password
+        };
+
+        _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => null);
+
+        var exception = await Assert.ThrowsAsync<DomainException>(() => _service.UpdateUser(dto, Guid.NewGuid()));
+        Assert.Equal(ExceptionMessageConstants.UserNotExistsException, exception.Message);
     }
 }
