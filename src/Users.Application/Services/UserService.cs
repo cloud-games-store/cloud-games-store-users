@@ -18,13 +18,13 @@ public class UserService : IUserService
         _hasher = hasher;
     }
 
-    public async Task<ResultDto> CreateUser(UserRequestDto dto, bool isAdmin = false)
+    public async Task<ResultDto<UserDto>> CreateUser(UserRequestDto dto, bool isAdmin = false)
     {
         var userExists = await _repository.UserEmailAlreadyExists(dto.Email);
 
         if (userExists)
         {
-            throw new DomainException(ExceptionMessageConstants.EmailAlreadyExistsException);
+            return ResultDto<UserDto>.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.EmailAlreadyExistsException));
         }
 
         var user = new User(dto.Name, dto.Email, _hasher.Hash(dto.Password));
@@ -34,9 +34,9 @@ public class UserService : IUserService
             user.SetUserAdmin();
         }
 
-        await _repository.CreateUser(user);
+        var userId = await _repository.CreateUser(user);
 
-        return ResultDto.Ok();
+        return ResultDto<UserDto>.Ok(new UserDto(userId, user?.Name, user?.Email));
     }
 
     public async Task<ResultDto> DeleteUser(Guid id)
@@ -45,10 +45,10 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new DomainException(ExceptionMessageConstants.UserNotExistsException);
+            return ResultDto.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.UserNotExistsException));
         }
 
-        await _repository.DeleteUser(user.Id);
+        await _repository.DeleteUser(user);
 
         return ResultDto.Ok();
     }
@@ -68,7 +68,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new DomainException(ExceptionMessageConstants.UserNotExistsException);
+            return ResultDto.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.UserNotExistsException));
         }
 
         user.Update(dto.Name, dto.Email, _hasher.Hash(dto.Password));
