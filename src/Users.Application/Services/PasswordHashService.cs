@@ -11,6 +11,6 @@ public class PasswordHashService : IPasswordHash
 
     public bool VerifyPassword(string password, string hash)
     {
-        throw new NotImplementedException();
+        return BCrypt.Net.BCrypt.Verify(password, hash);
     }
 }

@@ -19,6 +19,8 @@ services:
       - "80:80"
     environment:
       ConnectionStrings__DbConnection: "Server=database;Port=5432;Database=sqldb-users;Username=postgres;Password=postgres;"
+      Jwt__Key: "12345678901234567890123456789012"
+      Jwt__Issuer: "FIAPCloudGames"
       ASPNETCORE_URLS: "http://+:80"
     depends_on:
       - database

@@ -7,4 +7,5 @@ public static class ExceptionMessageConstants
     public const string PasswordEmptyException = "The password must not be empty.";
     public const string EmailAlreadyExistsException = "Email already registered.";
     public const string UserNotExistsException = "User not found.";
+    public const string UserUnauthorized = "Unauthorized.";
 }
