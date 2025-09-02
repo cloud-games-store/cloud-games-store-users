@@ -17,7 +17,7 @@ public class UserDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DbConnection"));
+        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DbConnection"));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
