@@ -33,6 +33,11 @@ public class UserRepository : IUserRepository
         return await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id);
     }
 
+    public async Task<User?> GetUser(string email)
+    {
+        return await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Email == email);
+    }
+
     public async Task UpdateUser(User user)
     {
         _context.Users.Update(user);

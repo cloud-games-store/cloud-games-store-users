@@ -1,15 +1,14 @@
 services:
   database:
-    image: postgres
+    image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "1433:1433"
     environment:
-      POSTGRES_DB: sqldb-users
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: password@1
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/opt/mssql
 
   users-api:
     build:
@@ -18,7 +17,9 @@ services:
     ports:
       - "80:80"
     environment:
-      ConnectionStrings__DbConnection: "Server=database;Port=5432;Database=sqldb-users;Username=postgres;Password=postgres;"
+      ConnectionStrings__DbConnection: "Server=database, 1433;Database=sqldb-users;User Id=sa;Password=password@1;TrustServerCertificate=True;"
+      Jwt__Key: "12345678901234567890123456789012"
+      Jwt__Issuer: "FIAPCloudGames"
       ASPNETCORE_URLS: "http://+:80"
     depends_on:
       - database
