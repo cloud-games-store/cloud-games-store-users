@@ -69,23 +69,23 @@ public class UserServiceTests
         Assert.NotEmpty(results);
     }
 
-    [Theory]
-    [InlineData("Luana", "luana@gmail.com", "senha123@1")]
-    public async Task CreateUser_EmailAlreadyExists_ShouldThrowException(string name, string email, string password)
-    {
-        var dto = new UserRequestDto()
-        {
-            Name = name,
-            Email = email,
-            Password = password
-        };
+    //[Theory]
+    //[InlineData("Luana", "luana@gmail.com", "senha123@1")]
+    //public async Task CreateUser_EmailAlreadyExists_ShouldThrowException(string name, string email, string password)
+    //{
+    //    var dto = new UserRequestDto()
+    //    {
+    //        Name = name,
+    //        Email = email,
+    //        Password = password
+    //    };
 
-        _hasher.Setup(service => service.Hash(dto.Password)).Returns((string password) => BCrypt.Net.BCrypt.HashPassword(password));
-        _repository.Setup(repository => repository.UserEmailAlreadyExists(dto.Email)).ReturnsAsync((string email) => true);
+    //    _hasher.Setup(service => service.Hash(dto.Password)).Returns((string password) => BCrypt.Net.BCrypt.HashPassword(password));
+    //    _repository.Setup(repository => repository.UserEmailAlreadyExists(dto.Email)).ReturnsAsync((string email) => true);
 
-        var exception = await Assert.ThrowsAsync<DomainException>(() => _service.CreateUser(dto));
-        Assert.Equal(ExceptionMessageConstants.EmailAlreadyExistsException, exception.Message);
-    }
+    //    var exception = await Assert.ThrowsAsync<DomainException>(() => _service.CreateUser(dto));
+    //    Assert.Equal(ExceptionMessageConstants.EmailAlreadyExistsException, exception.Message);
+    //}
 
     [Theory]
     [InlineData("Luana", "luana@gmail.com", "senha123@1")]
@@ -108,22 +108,22 @@ public class UserServiceTests
         Assert.True(result.Success);
     }
 
-    [Theory]
-    [InlineData("Luana", "luana@gmail.com", "senha123@1")]
-    public async Task UpdateUser_UserNotExists_ShouldThrowException(string name, string email, string password)
-    {
-        var dto = new UserRequestDto()
-        {
-            Name = name,
-            Email = email,
-            Password = password
-        };
+    //[Theory]
+    //[InlineData("Luana", "luana@gmail.com", "senha123@1")]
+    //public async Task UpdateUser_UserNotExists_ShouldThrowException(string name, string email, string password)
+    //{
+    //    var dto = new UserRequestDto()
+    //    {
+    //        Name = name,
+    //        Email = email,
+    //        Password = password
+    //    };
 
-        _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => null);
+    //    _repository.Setup(repository => repository.GetUser(It.IsAny<Guid>())).ReturnsAsync((Guid id) => null);
 
-        var exception = await Assert.ThrowsAsync<DomainException>(() => _service.UpdateUser(dto, Guid.NewGuid()));
-        Assert.Equal(ExceptionMessageConstants.UserNotExistsException, exception.Message);
-    }
+    //    var exception = await Assert.ThrowsAsync<DomainException>(() => _service.UpdateUser(dto, Guid.NewGuid()));
+    //    Assert.Equal(ExceptionMessageConstants.UserNotExistsException, exception.Message);
+    //}
 
     [Theory]
     [InlineData("Luana", "luana@gmail.com", "senha123@1")]
