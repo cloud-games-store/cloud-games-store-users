@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using FIAPCloudGamesStore.Logs.Services.Interfaces;
+using Moq;
 using System.ComponentModel.DataAnnotations;
 using Users.Application.DTOs;
 using Users.Application.Interfaces;
@@ -15,12 +16,14 @@ public class UserServiceTests
     private readonly IUserService _service;
     private readonly Mock<IPasswordHash> _hasher;
     private readonly Mock<IUserRepository> _repository;
+    private readonly Mock<IGenericTelemetryService<UserService>> _telemetry;
 
     public UserServiceTests()
     {
         _hasher = new Mock<IPasswordHash>();
         _repository = new Mock<IUserRepository>();
-        _service = new UserService(_repository.Object, _hasher.Object);
+        _telemetry = new Mock<IGenericTelemetryService<UserService>>();
+        _service = new UserService(_repository.Object, _hasher.Object, _telemetry.Object);
     }
 
 

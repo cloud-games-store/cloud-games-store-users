@@ -1,13 +1,14 @@
-﻿using System.Security.Claims;
+﻿using FIAPCloudGamesStore.Logs.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Users.Application.DTOs;
 using Users.Application.Interfaces;
 using Users.Domain.Constants;
 using Users.Domain.Entities;
 using Users.Domain.Interfaces;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Configuration;
 
 namespace Users.Application.Services;
 
@@ -16,12 +17,14 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHash _hasher;
     private readonly IConfiguration _configuration;
+    private readonly IGenericTelemetryService<AuthService> _telemetryService;
 
-    public AuthService(IUserRepository userRepository, IPasswordHash hasher, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IPasswordHash hasher, IConfiguration configuration, IGenericTelemetryService<AuthService> telemetryService)
     {
         _hasher = hasher;
         _userRepository = userRepository;
         _configuration = configuration;
+        _telemetryService = telemetryService;
     }
 
     public async Task<ResultDto<string>> Login(LoginRequestDto dto)
@@ -30,6 +33,7 @@ public class AuthService : IAuthService
 
         if (user is null)
         {
+            _telemetryService.LogTextError(nameof(Login), $"User is null, {dto.Email}");
             return ResultDto<string>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 
@@ -37,6 +41,7 @@ public class AuthService : IAuthService
 
         if (!samePassword)
         {
+            _telemetryService.LogTextError(nameof(Login), $"Wrong password, {dto.Email}");
             return ResultDto<string>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 
