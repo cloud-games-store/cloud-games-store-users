@@ -1,8 +1,8 @@
-﻿using Users.Application.DTOs;
+﻿using FIAPCloudGamesStore.Logs.Services.Interfaces;
+using Users.Application.DTOs;
 using Users.Application.Interfaces;
 using Users.Domain.Constants;
 using Users.Domain.Entities;
-using Users.Domain.Exceptions;
 using Users.Domain.Interfaces;
 
 namespace Users.Application.Services;
@@ -11,11 +11,13 @@ public class UserService : IUserService
 {
     private readonly IPasswordHash _hasher;
     private readonly IUserRepository _repository;
+    private readonly IGenericTelemetryService<UserService> _telemetryService;
 
-    public UserService(IUserRepository repository, IPasswordHash hasher)
+    public UserService(IUserRepository repository, IPasswordHash hasher, IGenericTelemetryService<UserService> telemetryService)
     {
         _repository = repository;
         _hasher = hasher;
+        _telemetryService = telemetryService;
     }
 
     public async Task<ResultDto<UserDto>> CreateUser(UserRequestDto dto, bool isAdmin = false)
@@ -24,6 +26,7 @@ public class UserService : IUserService
 
         if (userExists)
         {
+            _telemetryService.LogTextError(nameof(CreateUser), ExceptionMessageConstants.EmailAlreadyExistsException);
             return ResultDto<UserDto>.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.EmailAlreadyExistsException));
         }
 
@@ -45,6 +48,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
+            _telemetryService.LogTextError(nameof(DeleteUser), ExceptionMessageConstants.UserNotExistsException);
             return ResultDto.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.UserNotExistsException));
         }
 
@@ -68,6 +72,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
+            _telemetryService.LogTextError(nameof(UpdateUser), ExceptionMessageConstants.UserNotExistsException);
             return ResultDto.Fail(ValueObjects.Error.BadRequest(ExceptionMessageConstants.UserNotExistsException));
         }
 
