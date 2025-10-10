@@ -27,14 +27,14 @@ public class AuthService : IAuthService
         _telemetryService = telemetryService;
     }
 
-    public async Task<ResultDto<string>> Login(LoginRequestDto dto)
+    public async Task<ResultDto<object>> Login(LoginRequestDto dto)
     {
         var user = await _userRepository.GetUser(dto.Email);
 
         if (user is null)
         {
             _telemetryService.LogTextError(nameof(Login), $"User is null, {dto.Email}");
-            return ResultDto<string>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
+            return ResultDto<object>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 
         var samePassword = _hasher.VerifyPassword(dto.Password, user.PasswordHash);
@@ -42,10 +42,15 @@ public class AuthService : IAuthService
         if (!samePassword)
         {
             _telemetryService.LogTextError(nameof(Login), $"Wrong password, {dto.Email}");
-            return ResultDto<string>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
+            return ResultDto<object>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 
-        return ResultDto<string>.Ok(GenerateJwt(user));
+        var jwt = GenerateJwt(user);
+
+        return ResultDto<object>.Ok(new {
+            UserId = user.Id,
+            Token = jwt
+        });
     }
 
     private string GenerateJwt(User user)

@@ -6,7 +6,7 @@ using Users.Application.Interfaces;
 
 namespace Users.API.Controllers;
 
-[Route("user")]
+[Route("api/user")]
 [ApiController]
 [Produces("application/json")]
 [Consumes("application/json")]
