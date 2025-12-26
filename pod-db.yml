@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Pod
 metadata:
-    name: pod-users
+    name: pod-db
     labels:
-        app: cloudgames-users
+        app: pod-db
 spec:
     containers:
-        - name: fiapcloudgames-users
-          image:  users-api:local
+        - name: sqlserver
+          image:  mcr.microsoft.com/mssql/server:2022-latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080 # Porta que a aplicação .NET está ouvindo
+            - containerPort: 1433
           env:
             - name: Jwt__Key
               valueFrom:
@@ -23,8 +23,7 @@ spec:
                 secretKeyRef:
                     name: secret-users
                     key: Jwt__Issuer
-            - name: ConnectionStrings__DbConnection
-              valueFrom:
-                secretKeyRef:
-                    name: secret-users
-                    key: ConnectionStrings__DbConnection
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_SA_PASSWORD
+              value: "password@1"

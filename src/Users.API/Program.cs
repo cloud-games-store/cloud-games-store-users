@@ -19,8 +19,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddGenericTelemetry("CloudGamesStore.Users");
-
 #region DI - Services & Repository
 
 builder.Services.AddScoped<IUserService, UserService>();
