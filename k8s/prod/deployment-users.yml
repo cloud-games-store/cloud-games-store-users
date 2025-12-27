@@ -18,6 +18,24 @@ spec:
                   imagePullPolicy: IfNotPresent
                   ports:
                     - containerPort: 8080 # Porta que a aplicação .NET está ouvindo
+                  startupProbe:
+                    httpGet:
+                        path: /health/live
+                        port: 8080
+                    failureThreshold: 30
+                    periodSeconds: 10
+                  livenessProbe:
+                    httpGet:
+                        path: /health/live
+                        port: 8080
+                    initialDelaySeconds: 10
+                    periodSeconds: 30
+                  readinessProbe:
+                    httpGet:
+                        path: /health/ready
+                        port: 8080
+                    initialDelaySeconds: 10
+                    periodSeconds: 5
                   resources:
                     requests: # O mínimo garantido 
                         cpu: "200m"
