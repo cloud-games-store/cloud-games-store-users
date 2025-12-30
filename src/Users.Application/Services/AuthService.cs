@@ -17,14 +17,12 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHash _hasher;
     private readonly IConfiguration _configuration;
-    private readonly IGenericTelemetryService<AuthService> _telemetryService;
 
-    public AuthService(IUserRepository userRepository, IPasswordHash hasher, IConfiguration configuration, IGenericTelemetryService<AuthService> telemetryService)
+    public AuthService(IUserRepository userRepository, IPasswordHash hasher, IConfiguration configuration)
     {
         _hasher = hasher;
         _userRepository = userRepository;
         _configuration = configuration;
-        _telemetryService = telemetryService;
     }
 
     public async Task<ResultDto<object>> Login(LoginRequestDto dto)
@@ -33,7 +31,6 @@ public class AuthService : IAuthService
 
         if (user is null)
         {
-            _telemetryService.LogTextError(nameof(Login), $"User is null, {dto.Email}");
             return ResultDto<object>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 
@@ -41,7 +38,6 @@ public class AuthService : IAuthService
 
         if (!samePassword)
         {
-            _telemetryService.LogTextError(nameof(Login), $"Wrong password, {dto.Email}");
             return ResultDto<object>.Fail(ValueObjects.Error.Unauthorized(ExceptionMessageConstants.UserUnauthorized));
         }
 

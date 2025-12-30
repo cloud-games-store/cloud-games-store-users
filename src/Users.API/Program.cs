@@ -1,6 +1,7 @@
-using FIAPCloudGamesStore.Logs.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -17,9 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddGenericTelemetry("CloudGamesStore.Users");
 
 #region DI - Services & Repository
 
@@ -91,9 +89,32 @@ builder.Services.AddSwaggerGen(opt =>
 
 #endregion
 
+#region Health Check
+
+builder.Services.AddHealthChecks().AddSqlServer(
+    builder.Configuration.GetConnectionString("DbConnection")!,
+    name: "sqlserver",
+    failureStatus: HealthStatus.Unhealthy,
+    timeout: TimeSpan.FromSeconds(5)
+);
+#endregion
+
 var app = builder.Build();
 
-#region Apply Migrations
+#region Health Check Endpoints
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Name == "sqlserver"
+});
+#endregion
+
+    #region Apply Migrations
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -104,11 +125,12 @@ context.Database.Migrate();
 
 #endregion
 
+
 app.UseSwagger();
 
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
