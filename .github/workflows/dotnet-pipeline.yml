@@ -69,7 +69,7 @@ jobs:
       
       - name: 🚀 Deploy no AKS
         run: |
-          kubectl apply -f deployment-users.yml
+          kubectl apply -f k8s/prod/deployment-users.yml
           kubectl set image deployment/deployment-users \
             fiapcloudgames-users=${{ secrets.ACR_LOGIN_SERVER }}/users-api:latest \
             -n users
