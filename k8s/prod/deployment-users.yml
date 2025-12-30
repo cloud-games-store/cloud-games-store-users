@@ -16,7 +16,7 @@ spec:
             containers:
                 - name: fiapcloudgames-users
                   image:  users-api:local
-                  imagePullPolicy: IfNotPresent
+                  imagePullPolicy: Always
                   ports:
                     - containerPort: 8080 # Porta que a aplicação .NET está ouvindo
                   startupProbe:
