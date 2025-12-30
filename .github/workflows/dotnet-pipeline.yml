@@ -1,4 +1,4 @@
-﻿name: CI - Build & Test .NET 8 & Deploy
+name: CI - Build & Test .NET 8 & Deploy
 
 on:
   push:
