@@ -128,7 +128,12 @@ context.Database.Migrate();
 
 app.UseSwagger();
 
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FIAP Cloud Games - Users V1");
+
+    c.RoutePrefix = "users/swagger";
+});
 
 app.UseAuthentication();
 
