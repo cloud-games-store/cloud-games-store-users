@@ -131,8 +131,6 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "FIAP Cloud Games - Users V1");
-
-    c.RoutePrefix = "users/swagger";
 });
 
 app.UseAuthentication();
