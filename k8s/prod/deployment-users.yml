@@ -60,3 +60,8 @@ spec:
                         secretKeyRef:
                             name: secret-users
                             key: ConnectionStrings__DbConnection
+                    - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+                      valueFrom:
+                        secretKeyRef:
+                            name: secret-users
+                            key: APPLICATIONINSIGHTS_CONNECTION_STRING
