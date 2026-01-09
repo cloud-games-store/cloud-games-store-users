@@ -25,7 +25,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IPasswordHash, PasswordHashService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddApplicationInsightsTelemetry();
 #endregion
 
 #region Database
@@ -114,7 +114,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 });
 #endregion
 
-    #region Apply Migrations
+#region Apply Migrations
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -128,10 +128,7 @@ context.Database.Migrate();
 
 app.UseSwagger();
 
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FIAP Cloud Games - Users V1");
-});
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 
