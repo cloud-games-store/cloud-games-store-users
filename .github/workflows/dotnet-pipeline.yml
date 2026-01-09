@@ -47,10 +47,10 @@ jobs:
           echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
       - name: 🐳 Build da imagem Docker
-        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/users-api:{{ github.sha }} .
+        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/users-api:${{ github.sha }} .
 
       - name: 🚀 Push da imagem para o ACR
-        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/users-api:{{ github.sha }}
+        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/users-api:${{ github.sha }}
 
   push-to-aks:
     needs: push-to-acr
@@ -84,7 +84,7 @@ jobs:
           kubectl apply -f k8s/prod/svc-users.yml
           kubectl apply -f k8s/prod/deployment-users.yml
           kubectl set image deployment/deployment-users \
-            fiapcloudgames-users=${{ secrets.ACR_LOGIN_SERVER }}/users-api:{{ github.sha }} \
+            fiapcloudgames-users=${{ secrets.ACR_LOGIN_SERVER }}/users-api:${{ github.sha }} \
             -n users
           kubectl apply -f k8s/prod/hpa-users.yml
 
